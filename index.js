@@ -104,10 +104,10 @@ app.get('/upload', (req, res) => {
    
 });
 
-
+//UPLOAD ARQUIVO
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/home/osboxes/Public/nodeuploadimg/imagens')
+      cb(null, '/home/osboxes/Public/nodeuploadimg/uploads')
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + path.extname(file.originalname))
@@ -121,10 +121,10 @@ const upload = multer({ storage: storage });
 app.post('/upload_img', upload.single('image'), (req, res, next) => {
   const file = req.file;
   if (!file) {
-    const error = new Error('Please select an image to upload');
+    const error = new Error('Please select an file to upload');
     error.httpStatusCode = 400;
     return next(error);
   }
-  res.send('Image uploaded successfully');
+  res.send('file uploaded successfully');
   
 });
