@@ -107,7 +107,7 @@ app.get('/upload', (req, res) => {
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, '/home/osboxes')
+      cb(null, '/home/osboxes/Public/nodeuploadimg/imagens')
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + path.extname(file.originalname))
