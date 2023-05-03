@@ -104,7 +104,7 @@ app.get('/upload', (req, res) => {
    
 });
 
-//UPLOAD ARQUIVO
+//----------- UPLOAD ARQUIVO INICIO---------------------//
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, '/home/osboxes/Public/nodeuploadimg/uploads')
@@ -128,3 +128,4 @@ app.post('/upload_img', upload.single('image'), (req, res, next) => {
   res.send('file uploaded successfully');
   
 });
+//----------- UPLOAD ARQUIVO FIM ---------------------//
