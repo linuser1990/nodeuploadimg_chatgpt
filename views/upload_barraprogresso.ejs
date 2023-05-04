@@ -1,6 +1,46 @@
-<form method="POST" action="/upload_progressBar" enctype="multipart/form-data">
-    <label for="image">Select an file to upload:</label>
-    <input type="file" id="image" name="image">
-    <br>
-    <button type="submit">Upload</button>
-  </form>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Upload de Imagem com Barra de Progresso</title>
+  </head>
+  <body>
+    <h1>Upload de Imagem com Barra de Progresso</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="post">
+      <input type="file" name="image" id="image">
+      <button type="submit">Enviar</button>
+      <div id="progressBar"></div>
+    </form>
+
+    <script>
+      const form = document.querySelector('#uploadForm');
+      const progressBar = document.querySelector('#progressBar');
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const fileInput = document.querySelector('#image');
+        const file = fileInput.files[0];
+        if (!file) {
+          alert('Selecione uma imagem para enviar');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', e => {
+          if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            progressBar.style.width = percentComplete + '%';
+          }
+        });
+
+        xhr.open('POST', '/upload_progressBar');
+        xhr.send(formData);
+      });
+    </script>
+  </body>
+</html>

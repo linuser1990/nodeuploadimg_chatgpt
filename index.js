@@ -9,9 +9,6 @@ const multer = require('multer');
 const axios = require('axios');
 const FormData = require('form-data');
 
-//const express = require('express');
-//const path = require('path');const multer = require('multer');
-
 
 //aceitando EJS
 app.set('view engine', 'ejs');
@@ -26,6 +23,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'css')));
 app.use(express.static(path.join(__dirname, 'views')));
 app.use(express.static(path.join(__dirname, '/')));
+
+//////////////Configura local do arquivo feito upload-INICIO//////////////////
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, '/home/osboxes/Public/nodeuploadimg/uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname))
+    }
+  });
+   
+const upload = multer({ storage: storage });
+///////////////////////////-FIM-/////////////////////////////////////
 
 
 // Configura��o do banco de dados
@@ -113,19 +123,7 @@ app.get('/upload_progressBar', (req, res) => {
    
 });
 
-//----------- UPLOAD ARQUIVO INICIO---------------------//
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, '/home/osboxes/Public/nodeuploadimg/uploads')
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + path.extname(file.originalname))
-    }
-  });
-   
-const upload = multer({ storage: storage });
-  
-
+//----------- UPLOAD ARQUIVO INICIO---------------------//  
 
 app.post('/upload_img', upload.single('image'), (req, res, next) => {
   const file = req.file;
@@ -143,10 +141,6 @@ app.post('/upload_img', upload.single('image'), (req, res, next) => {
 //----------- UPLOAD ARQUIVO COM BARRA DE PROGRESSO INICIO ---------------------//
 
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
 app.post('/upload_progressBar', upload.single('image'), (req, res, next) => {
   const file = req.file;
   if (!file) {
@@ -162,7 +156,9 @@ app.post('/upload_progressBar', upload.single('image'), (req, res, next) => {
     knownLength: file.size
   });
 
-  axios.post('http://localhost:3000/upload', formData, {
+  
+
+  axios.post('http://localhost:3000/upload_progressBar', formData, {
     headers: {
       ...formData.getHeaders(),
       'Content-Length': formData.getLengthSync()
