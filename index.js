@@ -6,6 +6,8 @@ const app = express();
 const port = 3000;
 const { Pool } = require('pg');
 const multer = require('multer');
+const axios = require('axios');
+const FormData = require('form-data');
 
 //const express = require('express');
 //const path = require('path');const multer = require('multer');
@@ -104,6 +106,13 @@ app.get('/upload', (req, res) => {
    
 });
 
+app.get('/upload_progressBar', (req, res) => {
+
+    res.render('upload_barraprogresso', { varTitle: "Sistema de Vendas - UPLOAD-BARRA", nome:'NOME' });
+
+   
+});
+
 //----------- UPLOAD ARQUIVO INICIO---------------------//
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -129,3 +138,45 @@ app.post('/upload_img', upload.single('image'), (req, res, next) => {
   
 });
 //----------- UPLOAD ARQUIVO FIM ---------------------//
+
+
+//----------- UPLOAD ARQUIVO COM BARRA DE PROGRESSO INICIO ---------------------//
+
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.post('/upload_progressBar', upload.single('image'), (req, res, next) => {
+  const file = req.file;
+  if (!file) {
+    const error = new Error('Please select an image to upload');
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+
+  const formData = new FormData();
+  formData.append('image', file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+    knownLength: file.size
+  });
+
+  axios.post('http://localhost:3000/upload', formData, {
+    headers: {
+      ...formData.getHeaders(),
+      'Content-Length': formData.getLengthSync()
+    },
+    onUploadProgress: function (progressEvent) {
+      const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+      console.log(`Upload Progress: ${progress}%`);
+    }
+  }).then(response => {
+    console.log(response.data);
+    res.send('Image uploaded successfully');
+  }).catch(error => {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  });
+});
+
